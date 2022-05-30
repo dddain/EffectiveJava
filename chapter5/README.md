@@ -39,3 +39,11 @@ ex) List.class, String[] class, int.class (O)
        if (o instanceof Set) { Set<?> s = (Set<?>) o; }
        </code>
        
+***
+# item27. 비검사 경고를 제거하라 
+
+* 비검사 경고(warning: [unchecked])는 최선을 다해서 제거해야한다. <br /> 
+만약, 경고를 없앨 방법을 찾지 못하겠다면, 그 코드가 타입 안전함을 증명하고 
+  > @SuppreddWarnings("unchecked")
+  
+  annotation으로 경고를 숨기고, 근거를 주석으로 남길 것 
