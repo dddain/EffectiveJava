@@ -113,11 +113,11 @@ new List<E>[], new List<String>[], new E[] (런타임에 정보가 없어지는 
 - PECS <br />
 T의 Producer라면 Extends, Consumer라면 Super ... <br />
 
-public static double sumOfList(List<? extends Number> list) { ... }
-=> 지정된(Number)의 하위 타입(Integer)만 받을 수 있다 <br />
- public static void printList(List<?> list) { ... }
+- public static double sumOfList(List<? extends Number> list) { ... } <br />
+=> 지정된(Number)의 하위 타입(Integer)만 받을 수 있다
+- public static void printList(List<?> list) { ... } <br />
 => 제한 없음
-public static void addNumbers(List<? super Integer> list) { ... }
+- public static void addNumbers(List<? super Integer> list) { ... } <br />
 => 지정된(Integer) 타입의 상위 타입만 허용(Number, Object)
 
 
@@ -261,7 +261,7 @@ public class MyComparator implements Comparator&lt;Integer> {
 ArrayList&lt;String> , ArrayList&lt;Integer> 및 ArrayList&lt;Number> 세 가지 인스턴스의 인수를 추론합니다. <b>목표 타입 추론</b> <br />
 추론 한 유형 String, Integer, Number <b>목표 타입</b>
 
-출 : https://www.baeldung.com/java-generalized-target-type-inference
+출처 : https://www.baeldung.com/java-generalized-target-type-inference
 
 ### p. 187 ~ 188의 comparable<E>, Delayed, ScheduledFuture<V>의 관계에 대한 설명
 ScheduledFuture&lt;V> extends Delayed <br />
