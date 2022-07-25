@@ -28,8 +28,15 @@
 - assert 
 : private 메소드 시에는 유효한 값만이 메서드에 넘겨질 것을 보장할 수 있으므로, 
   assert를 사용하여 매개변수 유효성을 검증할 수 있다고 하였는데,<br />
+ 
   <pre>
   <code>
+  public static void notNull(@Nullable Object object, Supplier<String> messageSupplier) {
+		if (object == null) {
+			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
+		}
+	} // null일 시에 예외처리하는 메소드 notNull 
+  
   /**
   * Assert that an object is null.
   * Assert.isNull(value, "The value must be null");
