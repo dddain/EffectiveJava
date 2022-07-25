@@ -78,11 +78,41 @@
 # item 50.적시에 방어적 복사본을 만들라. 
 => 클라이언트 단으로 객체값을 리턴해줄때, 객체 레퍼런스를 함께 넘기면 레퍼런스를 통해 내부 값을 변경할 수 있으니 복사본을 만들어 사용 및 리턴해야한다. <br/>
 
-외부 공격으로부터 Period 인스턴스의 내부를 보호하려면, 
+외부 공격으로부터 Period 인스턴스의 내부를 보호하려면,
 1) 생성자에서 받은 가변 매개변수 각각을 방어적으로 복사해야함
-2) 가변 필드의 방어적 복사본을 반환 
+2) 가변 필드의 방어적 복사본을 반환
+  - 방어적 복사란 ? 생성자를 통해 초기화 할 때, 새로운 객체로 감싸서 복사해주는 방법 <br />
+    외부와 내부에서 주소값을 공유하는 인스턴스의 관게를 끊어주기 위함 (ex- 외부에서 변경한 객체가 내부에 영향이 끼치지 않도록) <br />
+    외부와의 관계 끊기 <br />
 
-해당 예시가 setter보다 builder를 써야하는 이유의 예가 되는지..?
+<pre>
+<code>
+  // setter 변경 취약점 -> 생성자에 방어적 복사 적용 
+  public Period(Date start, Date end) {
+    this.start = new Date(start.getTime()); // 방어적 복사
+    this.end = new Date(end.getTime()); // 방어적 복사
+    if (validation(this.start, this.end)) {
+        throw new IllegalArgumentException("");
+    }
+  }
+</code>
+</pre>
+
+<pre>
+<code>
+  // get으로 인스턴스를 가져와 변경할 경우 취약점 -> getter 메소드에서 방어적 복사 적용
+  public Date getStart() {
+      return new Date(start.getTime());
+  }
+  
+  public Date getEnd() {
+      return new Date(end.getTime());
+  }
+</code>
+</pre>
+https://velog.io/@miot2j/%EC%96%95%EC%9D%80%EB%B3%B5%EC%82%AC-%EA%B9%8A%EC%9D%80%EB%B3%B5%EC%82%AC-%EB%B0%A9%EC%96%B4%EC%A0%81-%EB%B3%B5%EC%82%AC%EB%9E%80
+
+해당 예시가 setter보다 builder를 써야하는 이유의 예가 되는듯 함
 
 *** 
 # item 51. 메서드 시그니처를 신중히 설계하라. 
@@ -101,23 +131,83 @@
   - 빌더 패턴을 사용하여 매소드 호
 ***
 # item 52. 다중정의는 신중히 사용하라
-컴파일 타임, 런타임 
+- Overloading 메서드는 정적으로 선택된다. 
+  - 컴파일 타임, 재정의되기 전에 컴파일 타임에 실제 타입이 아닌, 그 객체가 어떤 타입으로 넘어가는지를 보고 어떤 메서드가 호출될지 결정됨 
+- Override 메서드는 동적으로 선택된다. 
+  - 런타임, Override된 메서드가 재정의되고, 호출 되었을 때에 
+=> 매개변수 수가 같은 overloading은 하지 않는 것이 좋다. 
 
 ***
 
-Q. 파라미터 null 체크 보통 어떻게 하세요 ? ( 이건 질문 아니구 걍 스터디 시간에 모든 분들께 들어보고 싶은 내용임당 )
+Q. <b> 파라미터 null 체크 보통 어떻게 하세요 ? </b>
+( 이건 질문 아니구 걍 스터디 시간에 모든 분들께 들어보고 싶은 내용임당 )
+<br /> 자바 7에 추가된 java.util.Objects.requireNonNull 메소드는 유연하고 사용하기도 편하니~ (299p)
 <pre>
 <code>
-
+  if(param == null) { throws new BizException("check param"); }
+  
+  Objects.requireNonNull(param, "check param");
+  Optional.ofNullable(getNames()).orElseThrow(() -> new Exception());
+  Assert.notNull(param, "check param");
 </code>
 </pre>
 
-Q. clone( ) 메소드의 주의사항에 대해서 알고 싶어요!!
+Q. <b> clone( ) 메소드의 주의사항에 대해서 알고 싶어요!! </b>
+<br /> 관련 내용 : 매개변수가 제3자에 의해 확장될 수 있는 타입이라면 방어적 복사본을 만들 때 clone 을 사용해서는 안된다 (304p)
+<br /> => 
+<pre>
+<code>
+  public Period(Date start, Date end) {
+    this.start = new Date(start.getTime()); // 방어적 복사
+    this.end = new Date(end.getTime()); // 방어적 복사
+    if (validation(this.start, this.end)) {
+        throw new IllegalArgumentException("");
+    }
+  }
+</code>
+</pre>
+
+clone을 사용하여 복사본을 만들 수도 있지만, 생성자의 매개변수가(start, end) final클래스가 아니어서, <br />
+확장될 수 있는 타입이면, 방어적 복사본을 만들 때 재정의된(다른값) clone이 호출될 수 있으므로, 사용하면 안된다. <br />
+clone 메소드는 깊은 복사(실제 값을 복사, 새로운 메모리 공간에 복사, 재정의) 
+clone 메소드가 사용자가 정의한 값이 아닐 수 있다.
+즉, clone이 악의를 가진 하위 클래스의 인스턴스를 반환할 수도 있어 사용하면 안된다.
+<br />
+<pre>
+<code>
+CopyObject original = new CopyObject("dain", 20);
+CopyObject copy = original.clone();
+
+copy.setName("java");
+original.getName(); // dain
+copy.getName(); // java 
+</code>
+</pre>
+기본 원칙은 '복제 기능은 생성자와 팩터리를 이용하는게 최고' <br />
+단, 배열만은 clone 메소드 방식이 가장 깔끔한, 이 규칙의 합당한 예외라 할 수 있다. <br />
 
 Q. 코드 49-2 재귀 정렬용 private 도우미 함수에서 assert가 어떻게 동작하는지 시연을 보고 싶습니다. 
+<br /> => 
+- 거짓인 경우시 JVM이 AssertionError를 발생시킴
+- AssersionError : 응용 프로그램에서 복구할 수 없는 조건을 나타내기 위한 것, 이를 처리하거나 복구하려 하지 말 것
+- 즉, Catch로 잡는 행위 등을 하려 하지 말 것
 
-Q. P.308 편의 메서드에 대한 설명
+Q. P.308 편의 메서드에 대한 설명 <br />
+=> 편의를 위한 메소드, 
+Collections 안에 있는 모든 메서드 (swap, min, max)등, 없어도 기능 상 문제가 없어 
+그대로 사용할 수 있다. 
+다른 연산들로도 표현될 수 있는 메소드.
+<pre>
+<code>
+  private static void swap(Object[] arr, int i, int j) {
+    Object tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+</code>
+</pre>
 
 Q. P.310 카드게임을 클래스로 만든다고 가정했을 때 rank, suit매개변수를 묶는 도우미 클래스를 만들어 하나의 매개변수로 주고받는 API의 샘플이 궁금합니다.
 
 Q. p.317 다중정의 해소 알고리즘(?)을 고려할 사항이 위의 예시말고 다른것이 있을지 궁금합니다.
+
