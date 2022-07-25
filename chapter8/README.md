@@ -35,7 +35,8 @@
 		if (object == null) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	} // null일 시에 예외처리하는 메소드 notNull 
+	} 
+	// null일 시에 예외처리하는 메소드 notNull 
   
   /**
   * Assert that an object is null.
@@ -54,27 +55,13 @@
 
   /**
   * Assert that an object is {@code null}.
-  * Assert.isNull(value, () -&gt; "The value '" + value + "' must be null");
-  * @param object the object to check
-  * @param messageSupplier a supplier for the exception message to use if the
-  * assertion fails
-  * @throws IllegalArgumentException if the object is not {@code null}
-  * @since 5.0
-  */
-    public static void isNull(@Nullable Object object, Supplier<String> messageSupplier) {
-      if (object != null) {
-        throw new IllegalArgumentException(nullSafeGet(messageSupplier));
-      }
-    }
-
-  /**
-  * Assert that an object is {@code null}.
   * @deprecated as of 4.3.7, in favor of {@link #isNull(Object, String)}
   */
     @Deprecated
     public static void isNull(@Nullable Object object) {
       isNull(object, "[Assertion failed] - the object argument must be null");
     }
+    // null일 시에 예외처리하는 메소드 isNull
   </code>
   </pre>
 
@@ -88,13 +75,13 @@
 외부 공격으로부터 Period 인스턴스의 내부를 보호하려면,
 1) 생성자에서 받은 가변 매개변수 각각을 방어적으로 복사해야함
 2) 가변 필드의 방어적 복사본을 반환
-  - 방어적 복사란 ? 생성자를 통해 초기화 할 때, 새로운 객체로 감싸서 복사해주는 방법 <br />
-    외부와 내부에서 주소값을 공유하는 인스턴스의 관게를 끊어주기 위함 (ex- 외부에서 변경한 객체가 내부에 영향이 끼치지 않도록) <br />
+  - 방어적 복사란 ? 새로운 객체로 감싸서 복사해주는 방법 <br />
+    외부와 내부에서 주소값을 공유하는 인스턴스의 관계를 끊어주기 위함 (ex- 외부에서 변경한 객체가 내부에 영향이 끼치지 않도록) <br />
     외부와의 관계 끊기 <br />
 
 <pre>
 <code>
-  // setter 변경 취약점 -> 생성자에 방어적 복사 적용 
+  // setter 변경 취약점 -> 생성자에 방어적 복사 적용 (해당 예시가 setter보다 builder를 써야하는 이유의 예가 되는듯 함)
   public Period(Date start, Date end) {
     this.start = new Date(start.getTime()); // 방어적 복사
     this.end = new Date(end.getTime()); // 방어적 복사
@@ -118,8 +105,6 @@
 </code>
 </pre>
 https://velog.io/@miot2j/%EC%96%95%EC%9D%80%EB%B3%B5%EC%82%AC-%EA%B9%8A%EC%9D%80%EB%B3%B5%EC%82%AC-%EB%B0%A9%EC%96%B4%EC%A0%81-%EB%B3%B5%EC%82%AC%EB%9E%80
-
-해당 예시가 setter보다 builder를 써야하는 이유의 예가 되는듯 함
 
 *** 
 # item 51. 메서드 시그니처를 신중히 설계하라. 
