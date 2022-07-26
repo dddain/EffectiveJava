@@ -219,7 +219,7 @@ Q. P.310 카드게임을 클래스로 만든다고 가정했을 때 rank, suit�
 
 	private List<Card> ex2(List<Card> list) {
 		assert list != null;
-		assert list.size() > 5; // AssertionError!
+		assert list.size() > 5; // AssertionError 발생
 
 		return list;
 	}
