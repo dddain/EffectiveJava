@@ -200,6 +200,31 @@ Collections 안에 있는 모든 메서드 (swap, min, max)등, 없어도 기능
 </pre>
 
 Q. P.310 카드게임을 클래스로 만든다고 가정했을 때 rank, suit매개변수를 묶는 도우미 클래스를 만들어 하나의 매개변수로 주고받는 API의 샘플이 궁금합니다.
+<pre>
+<code>
+	@RequiredArgsConstructor
+	private static class Card {
+		private final Integer rank;
+		private final String suit;
+	}
+
+	public void example() {
+		List<Card> cardList = new ArrayList<>();
+		cardList.add(new Card(1, "circle"));
+		cardList.add(new Card(2, "square"));
+		cardList.add(new Card(3, "space"));
+
+		ex2(cardList);
+	}
+
+	private List<Card> ex2(List<Card> list) {
+		assert list != null;
+		assert list.size() > 5; // AssertionError!
+
+		return list;
+	}
+</code>
+</pre>
 
 Q. p.317 다중정의 해소 알고리즘(?)을 고려할 사항이 위의 예시말고 다른것이 있을지 궁금합니다.
 
